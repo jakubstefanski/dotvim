@@ -89,6 +89,7 @@ function print_summary() {
 
 function main() {
 	ensure_link "${DIR}/vimrc" "${HOME}/.vimrc"
+	ensure_link "${DIR}/vim" "${HOME}/.vim"
 	print_summary
 }
 
