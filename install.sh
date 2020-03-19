@@ -91,6 +91,7 @@ function main() {
 	ensure_link "${DIR}/vimrc" "${HOME}/.vimrc"
 	ensure_link "${DIR}/gvimrc" "${HOME}/.gvimrc"
 	ensure_link "${DIR}/vim" "${HOME}/.vim"
+	ensure_link "${DIR}/ideavimrc" "${HOME}/.ideavimrc"
 	print_summary
 }
 
