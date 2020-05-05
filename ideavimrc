@@ -1,4 +1,7 @@
+" General
 set showmode
+set visualbell
+set noerrorbells
 
 " Search
 set hlsearch
