@@ -1,10 +1,11 @@
-# dotfiles
+# dotvim
 
-My Vim configuration extracted from [my dotfiles repository](https://github.com/jakubstefanski/dotfiles).
+My Vim configuration
 
 ## Installation
 
-Run `./install.sh`. The script will prompt before replacing any existing
-files. It is idempotent and can be used to ensure that all
-relevant files are links to this repository.
+Make symbolic link to this repository:
 
+```bash
+ln -s "$(pwd)" ~/.vim
+```
