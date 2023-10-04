@@ -8,6 +8,7 @@ set number
 set backspace=indent,eol,start
 set scrolloff=1
 set sidescrolloff=5
+set nrformats-=octal
 
 " Disable visual bell
 set noerrorbells visualbell t_vb=
