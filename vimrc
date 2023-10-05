@@ -115,18 +115,6 @@ augroup HighlightTrailingWhitespaces
 	autocmd BufLeave * call clearmatches()
 augroup END
 
-" Fuzzy search
-function! FzyCommand(choice_command, vim_command)
-	try
-		let output = system(a:choice_command . " | fzy ")
-	catch /Vim:Interrupt/
-		" Swallow errors from ^C, allow redraw! below
-	endtry
-	redraw!
-	if v:shell_error == 0 && !empty(output)
-		exec a:vim_command . ' ' . output
-	endif
-endfunction
-
-nnoremap <Leader>e :call FzyCommand("ag . --silent -l -g ''", ":e")<CR>
-nnoremap <Leader>E :call FzyCommand("find . -type f -not -path '*/\.git/*'", ":e")<CR>
+" FZF configuration
+nnoremap <Leader>e :call fzf#run({'source': 'git ls-files', 'sink': 'e'})<CR>
+nnoremap <Leader>E :call fzf#run({'sink': 'e'})<CR>
