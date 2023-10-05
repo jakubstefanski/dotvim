@@ -1,6 +1,6 @@
 " abolish.vim - Language friendly searches, substitutions, and abbreviations
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.1
+" Version:      1.2
 " GetLatestVimScripts: 1545 1 :AutoInstall: abolish.vim
 
 " Initialization {{{1
@@ -23,8 +23,8 @@ endif
 " }}}1
 " Utility functions {{{1
 
-function! s:function(name)
-  return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '<SNR>\d\+_'),''))
+function! s:function(name) abort
+  return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '.*\zs<SNR>\d\+_'),''))
 endfunction
 
 function! s:send(self,func,...)
@@ -284,7 +284,7 @@ function! s:parse_subvert(bang,line1,line2,count,args)
   else
     let args = a:args
   endif
-  let separator = matchstr(args,'^.')
+  let separator = '\v((\\)@<!(\\\\)*\\)@<!' . matchstr(args,'^.')
   let split = split(args,separator,1)[1:]
   if a:count || split == [""]
     return s:parse_substitute(a:bang,a:line1,a:line2,a:count,split)
@@ -399,6 +399,8 @@ function! s:grep_command(args,bang,flags,word)
   let dict = s:create_dictionary(a:word,"",opts)
   if &grepprg == "internal"
     let lhs = "'".s:pattern(dict,opts.boundaries)."'"
+  elseif &grepprg =~# '^rg\|^ag'
+    let lhs = "'".s:egrep_pattern(dict,opts.boundaries)."'"
   else
     let lhs = "-E '".s:egrep_pattern(dict,opts.boundaries)."'"
   endif
@@ -563,6 +565,7 @@ endfunction
 call extend(Abolish.Coercions, {
       \ 'c': Abolish.camelcase,
       \ 'm': Abolish.mixedcase,
+      \ 'p': Abolish.mixedcase,
       \ 's': Abolish.snakecase,
       \ '_': Abolish.snakecase,
       \ 'u': Abolish.uppercase,
@@ -588,6 +591,7 @@ function! s:coerce(type) abort
     let regbody = getreg('"')
     let regtype = getregtype('"')
     let c = v:count1
+    let begin = getcurpos()
     while c > 0
       let c -= 1
       if a:type ==# 'line'
@@ -600,9 +604,6 @@ function! s:coerce(type) abort
       silent exe 'normal!' move.'y'
       let word = @@
       let @@ = s:send(g:Abolish.Coercions,s:transformation,word)
-      if !exists('begin')
-        let begin = getpos("'[")
-      endif
       if word !=# @@
         let changed = 1
         exe 'normal!' move.'p'
@@ -618,8 +619,8 @@ function! s:coerce(type) abort
 endfunction
 
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
+vnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
+nnoremap <expr> <Plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 
